@@ -6,70 +6,46 @@ public:
         vector<int> first(26, n);
         vector<int> last(26, -1);
 
-        // Find first and last occurrence of every character
-        for (int i = 0; i < n; i++) {
-            int ch = s[i] - 'a';
-
-            if (first[ch] == n) {
-                first[ch] = i;
-            }
-
-            last[ch] = i;
+        // Find first and last occurrence
+        for(int i = 0; i < n; i++){
+            int c = s[i] - 'a';
+            first[c] = min(first[c], i);
+            last[c] = i;
         }
 
         vector<pair<int, int>> intervals;
 
-        // Build all valid intervals
-        for (int ch = 0; ch < 26; ch++) {
-            if (last[ch] == -1) {
-                continue;
-            }
-
-            int start = first[ch];
-            int end = last[ch];
-
+        // Build valid intervals
+        for(int c = 0; c < 26; c++){
+            if(last[c] == -1) continue;
+            int l = first[c];
+            int r = last[c];
             bool valid = true;
-
-            for (int i = start; i <= end; i++) {
-                int current = s[i] - 'a';
-
-                if (first[current] < start) {
+            for(int i = l; i <= r; i++){
+                int x = s[i] - 'a';
+                // x has an occurrence before l
+                if(first[x] < l){
                     valid = false;
                     break;
                 }
-
-                end = max(end, last[current]);
+                // Must include all occurrences of x
+                r = max(r, last[x]);
             }
+            if(valid) intervals.push_back({r, l});
+        }
 
-            if (valid) {
-                intervals.push_back({start, end});
+        // Earliest ending interval first
+        sort(intervals.begin(), intervals.end());
+
+        vector<string> ans;
+        int prevEnd = -1;
+        for(auto [r, l] : intervals){
+            if(l > prevEnd){
+                ans.push_back(s.substr(l, r - l + 1));
+                prevEnd = r;
             }
         }
 
-        // Sort by ending position
-        sort(intervals.begin(), intervals.end(),
-             [](const pair<int, int>& a, const pair<int, int>& b) {
-                 if (a.second != b.second) {
-                     return a.second < b.second;
-                 }
-
-                 return (a.second - a.first) < (b.second - b.first);
-             });
-
-        vector<string> answer;
-        int previousEnd = -1;
-
-        // Greedily select non-overlapping intervals
-        for (auto& interval : intervals) {
-            int start = interval.first;
-            int end = interval.second;
-
-            if (start > previousEnd) {
-                answer.push_back(s.substr(start, end - start + 1));
-                previousEnd = end;
-            }
-        }
-
-        return answer;
+        return ans;
     }
 };
