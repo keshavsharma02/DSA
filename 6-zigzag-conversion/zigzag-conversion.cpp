@@ -1,30 +1,26 @@
 class Solution {
 public:
     string convert(string s, int numRows) {
-        if (numRows == 1 || numRows >= s.length()) {
-            return s;
-        }
+        if (numRows == 1) return s;
 
-        int idx = 0, d = 1;
-        vector<vector<char>> rows(numRows);
+        vector<vector<char>> mat(numRows);
+        int i = 0, n = s.length();
 
-        for (char c : s) {
-            rows[idx].push_back(c);
-            if (idx == 0) {
-                d = 1;
-            } else if (idx == numRows - 1) {
-                d = -1;
+        while (i < n) {
+            for (int down = 0; down < numRows && i < n; down++) {
+                mat[down].push_back(s[i++]);
             }
-            idx += d;
-        }
-
-        string result;
-        for (const auto& row : rows) {
-            for (char c : row) {
-                result += c;
+            for (int up = numRows - 2; up > 0 && i < n; up--) {
+                mat[up].push_back(s[i++]);
             }
         }
 
-        return result;        
+        string ans = "";
+        for (int r = 0; r < numRows; r++) {
+            for (char c : mat[r]) {
+                ans += c;
+            }
+        }
+        return ans;
     }
 };
