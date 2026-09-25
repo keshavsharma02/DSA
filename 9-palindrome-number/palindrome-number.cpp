@@ -1,13 +1,12 @@
 class Solution {
 public:
     bool isPalindrome(int x) {
-        if (x < 0) return false;  // negatives are not palindrome
-
-        long long rev = 0, num = x;
-        while(num) {
-            rev = rev * 10 + num % 10;  // build reversed number
-            num /= 10;
+        if (x<0 || (x%10 == 0 && x!=0)) return false;
+        long long rev = 0;
+        while (x>rev) {
+            rev = (rev*10) + (x%10);
+            x/=10;
         }
-        return rev == x;  // check if equal
+        return (rev == x || x == rev/10);
     }
 };
